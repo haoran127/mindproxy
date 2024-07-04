@@ -268,12 +268,26 @@ func NewHTTPRequest(inConn *net.Conn, bufSize int, isBasicAuth bool, basicAuth *
 		return
 	}
 	req.HeadBuf = buf[:len]
+
+	if len < 1 {
+		err = fmt.Errorf("http request too short")
+		CloseConn(inConn)
+		return
+	}
+
 	index := bytes.IndexByte(req.HeadBuf, '\n')
 	if index == -1 {
 		err = fmt.Errorf("http decoder data line err:%s", string(req.HeadBuf)[:50])
 		CloseConn(inConn)
 		return
 	}
+
+	if index > len {
+		err = fmt.Errorf("index out of bounds")
+		CloseConn(inConn)
+		return
+	}
+
 	fmt.Sscanf(string(req.HeadBuf[:index]), "%s%s", &req.Method, &req.hostOrURL)
 	if req.Method == "" || req.hostOrURL == "" {
 		err = fmt.Errorf("http decoder data err:%s", string(req.HeadBuf)[:50])
