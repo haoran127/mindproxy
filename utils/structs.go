@@ -32,9 +32,9 @@ type CheckerItem struct {
 	FailCount    uint
 }
 
-//NewChecker args:
-//timeout : tcp timeout milliseconds ,connect to host
-//interval: recheck domain interval seconds
+// NewChecker args:
+// timeout : tcp timeout milliseconds ,connect to host
+// interval: recheck domain interval seconds
 func NewChecker(timeout int, interval int64, blockedFile, directFile string) Checker {
 	ch := Checker{
 		data:     NewConcurrentMap(),
@@ -235,6 +235,22 @@ type HTTPRequest struct {
 	hostOrURL   string
 	isBasicAuth bool
 	basicAuth   *BasicAuth
+}
+
+func (req *HTTPRequest) GetHeader(key string) (string, error) {
+	key = strings.ToUpper(key)
+	lines := strings.Split(string(req.HeadBuf), "\r\n")
+	for _, line := range lines {
+		line := strings.SplitN(strings.Trim(line, "\r\n "), ":", 2)
+		if len(line) == 2 {
+			k := strings.ToUpper(strings.Trim(line[0], " "))
+			v := strings.Trim(line[1], " ")
+			if key == k {
+				return v, nil
+			}
+		}
+	}
+	return "", fmt.Errorf("can not find header: %s", key)
 }
 
 func NewHTTPRequest(inConn *net.Conn, bufSize int, isBasicAuth bool, basicAuth *BasicAuth) (req HTTPRequest, err error) {
