@@ -1,0 +1,15 @@
+{
+    "allowedDomains": [
+        "im30.net",
+        "im30app.com",
+	"im30app.cn",
+	"koppay.net",
+	"im30.com.cn",
+	"baidu.com",
+	"google.com",
+	"googleapis.com",
+	"myqcloud.com",
+	"mindoffice.net",
+	"rumt-zh.com"
+    ]
+}
